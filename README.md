@@ -1,5 +1,7 @@
 # Probability Distributions
 
+Code used in habr publication: https://habr.com/ru/articles/801101
+
 1. [Binomial Distribution](#binomial-distribution)
 2. [Poisson Distribution](#poisson-distribution)
 3. [Exponential Distribution](#exponential-distribution)
