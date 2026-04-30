@@ -92,15 +92,15 @@ export function ParamForm({
           step={100}
           min={10}
           max={10000}
-          size="s"
-          style={{ width: 100 }}
+          size="m"
+          style={{ width: 140, marginLeft: "auto" }}
         />
         <Button
           label="Сгенерировать"
           size="s"
           onClick={onGenerate}
           loading={loading}
-          style={{ whiteSpace: "nowrap", marginLeft: "auto" }}
+          style={{ whiteSpace: "nowrap" }}
         />
       </div>
 
