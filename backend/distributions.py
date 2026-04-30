@@ -10,7 +10,9 @@ def compute_binomial(params: dict, num_samples: int, num_bins: int) -> dict:
     samples = stats.binom.rvs(n=n, p=p, size=num_samples).tolist()
     x_theory = np.arange(0, n + 1)
     y_theory = (stats.binom.pmf(x_theory, n=n, p=p).tolist())
-    counts, bin_edges = np.histogram(samples, bins=num_bins, density=True)
+    # Integer bins for discrete distribution (width=1)
+    bins = np.arange(-0.5, n + 1.5, 1)
+    counts, bin_edges = np.histogram(samples, bins=bins, density=True)
     return {
         "samples": samples,
         "histogram": {"bin_edges": bin_edges.tolist(), "counts": counts.tolist()},
@@ -24,7 +26,9 @@ def compute_poisson(params: dict, num_samples: int, num_bins: int) -> dict:
     x_max = max(samples) + 1
     x_theory = np.arange(0, x_max + 1)
     y_theory = (stats.poisson.pmf(x_theory, mu=mu).tolist())
-    counts, bin_edges = np.histogram(samples, bins=num_bins, density=True)
+    # Integer bins for discrete distribution (width=1)
+    bins = np.arange(-0.5, x_max + 1.5, 1)
+    counts, bin_edges = np.histogram(samples, bins=bins, density=True)
     return {
         "samples": samples,
         "histogram": {"bin_edges": bin_edges.tolist(), "counts": counts.tolist()},
@@ -95,7 +99,9 @@ def compute_hypergeometric(params: dict, num_samples: int, num_bins: int) -> dic
     samples = stats.hypergeom.rvs(M=N, n=K, N=n, size=num_samples).tolist()
     x_theory = np.arange(0, min(K, n) + 1)
     y_theory = (stats.hypergeom.pmf(x_theory, M=N, n=K, N=n).tolist())
-    counts, bin_edges = np.histogram(samples, bins=num_bins, density=True)
+    # Integer bins for discrete distribution (width=1)
+    bins = np.arange(-0.5, min(K, n) + 1.5, 1)
+    counts, bin_edges = np.histogram(samples, bins=bins, density=True)
     return {
         "samples": samples,
         "histogram": {"bin_edges": bin_edges.tolist(), "counts": counts.tolist()},

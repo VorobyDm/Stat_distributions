@@ -2,10 +2,11 @@ import Plot from "react-plotly.js";
 import type { VariantResult } from "../types";
 
 interface Props {
-  variants: VariantResult[];
+  variants: VariantResult[]; // sliced (visible) data
+  totalSamples: number; // for fixed x-axis range
 }
 
-export function SampleTraceChart({ variants }: Props) {
+export function SampleTraceChart({ variants, totalSamples }: Props) {
   const data: Plotly.Data[] = variants.map((v) => ({
     y: v.samples,
     type: "scatter",
@@ -19,7 +20,7 @@ export function SampleTraceChart({ variants }: Props) {
       data={data}
       layout={{
         title: "Последовательность выборок",
-        xaxis: { title: "Итерация" },
+        xaxis: { title: "Итерация", range: [0, totalSamples] },
         yaxis: { title: "Значение" },
         height: 300,
         margin: { t: 40, b: 50, l: 60, r: 20 },
