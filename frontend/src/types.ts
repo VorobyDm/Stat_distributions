@@ -16,12 +16,22 @@ export interface DistributionConfig {
   default_variants: Record<string, number>[];
 }
 
+export interface VariantStats {
+  mean: number;
+  variance: number;
+  std: number;
+  median: number;
+  min: number;
+  max: number;
+}
+
 export interface VariantResult {
   label: string;
   color: string;
   samples: number[];
   histogram: { bin_edges: number[]; counts: number[] };
   theoretical: { x: number[]; y: number[] };
+  stats: VariantStats;
 }
 
 export interface ComputeResponse {

@@ -9,6 +9,7 @@ import { SampleTraceChart } from "./SampleTraceChart";
 
 interface Props {
   config: DistributionConfig;
+  onResults?: (results: ComputeResponse | null) => void;
 }
 
 function sliceVariants(variants: VariantResult[], step: number): VariantResult[] {
@@ -18,7 +19,7 @@ function sliceVariants(variants: VariantResult[], step: number): VariantResult[]
   }));
 }
 
-export function DistributionPage({ config }: Props) {
+export function DistributionPage({ config, onResults }: Props) {
   const [variants, setVariants] = useState<Record<string, number>[]>(
     config.default_variants
   );
@@ -85,6 +86,7 @@ export function DistributionPage({ config }: Props) {
     try {
       const data = await computeDistribution(config.id, variants, numSamples);
       setResults(data);
+      onResults?.(data);
       setStep(0);
       // Auto-start animation after generation
       setTimeout(() => setPlaying(true), 100);

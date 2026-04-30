@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Architecture — Stat Distributions</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, sans-serif; background: #f5f7fa; color: #1a1a2e; padding: 30px; }
+    h1 { text-align: center; margin-bottom: 8px; font-size: 24px; }
+    h2 { font-size: 18px; margin: 30px 0 14px; color: #334; }
+    .subtitle { text-align: center; color: #667; margin-bottom: 30px; font-size: 14px; }
+
+    /* ===== Interaction Diagram ===== */
+    .interaction {
+      display: flex; align-items: flex-start; justify-content: center;
+      gap: 20px; margin-bottom: 40px;
+    }
+    .block {
+      border-radius: 12px; padding: 20px; min-width: 260px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+    .block h3 { font-size: 15px; margin-bottom: 10px; }
+    .block ul { list-style: none; font-size: 13px; line-height: 1.9; }
+    .block ul li::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; }
+
+    .frontend { background: #e8f4fd; border: 2px solid #4a9fd5; }
+    .frontend h3 { color: #2b7bb9; }
+    .frontend ul li::before { background: #4a9fd5; }
+
+    .backend { background: #eafaf1; border: 2px solid #43a047; }
+    .backend h3 { color: #2e7d32; }
+    .backend ul li::before { background: #43a047; }
+
+    .arrow-col {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 18px; padding-top: 20px;
+    }
+    .arrow {
+      display: flex; flex-direction: column; align-items: center;
+      font-size: 11px; color: #555; line-height: 1.4;
+    }
+    .arrow .line {
+      width: 120px; height: 2px; background: #999; position: relative;
+    }
+    .arrow .line.right::after {
+      content: ""; position: absolute; right: -1px; top: -5px;
+      border: 6px solid transparent; border-left: 8px solid #999;
+    }
+    .arrow .line.left::after {
+      content: ""; position: absolute; left: -1px; top: -5px;
+      border: 6px solid transparent; border-right: 8px solid #999;
+    }
+    .arrow .label { margin-top: 4px; text-align: center; max-width: 140px; font-weight: 500; }
+
+    /* ===== Animation Timeline ===== */
+    .timeline {
+      background: #fff; border-radius: 12px; padding: 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08); margin-bottom: 30px;
+    }
+    .timeline h3 { font-size: 15px; margin-bottom: 16px; color: #334; }
+    .steps { position: relative; padding-left: 30px; }
+    .steps::before {
+      content: ""; position: absolute; left: 11px; top: 8px; bottom: 8px;
+      width: 3px; background: linear-gradient(to bottom, #4a9fd5, #e53935, #43a047);
+      border-radius: 2px;
+    }
+    .step {
+      position: relative; margin-bottom: 18px; padding: 10px 14px;
+      background: #fafbfc; border-radius: 8px; border: 1px solid #e8eaed;
+      font-size: 13px; line-height: 1.5;
+    }
+    .step::before {
+      content: attr(data-num); position: absolute; left: -30px; top: 10px;
+      width: 22px; height: 22px; border-radius: 50%; font-size: 11px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; color: #fff;
+    }
+    .step.fe::before { background: #4a9fd5; }
+    .step.be::before { background: #43a047; }
+    .step.anim::before { background: #e53935; }
+    .step .tag {
+      display: inline-block; font-size: 10px; font-weight: 700;
+      padding: 1px 6px; border-radius: 4px; margin-right: 6px;
+      vertical-align: middle;
+    }
+    .tag.fe { background: #d4edfc; color: #2b7bb9; }
+    .tag.be { background: #d4f5dc; color: #2e7d32; }
+    .tag.anim { background: #fdd; color: #c62828; }
+
+    /* ===== Data Flow ===== */
+    .dataflow {
+      background: #fff; border-radius: 12px; padding: 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08); margin-bottom: 30px;
+    }
+    .dataflow h3 { font-size: 15px; margin-bottom: 16px; color: #334; }
+    .json-box {
+      background: #1e1e2e; color: #cdd6f4; border-radius: 8px;
+      padding: 14px 18px; font-family: 'Consolas', monospace; font-size: 12px;
+      line-height: 1.6; overflow-x: auto; margin-bottom: 12px;
+    }
+    .json-box .key { color: #89b4fa; }
+    .json-box .str { color: #a6e3a1; }
+    .json-box .num { color: #fab387; }
+    .json-box .comment { color: #6c7086; font-style: italic; }
+    .json-label {
+      font-size: 12px; font-weight: 600; margin-bottom: 6px; color: #555;
+    }
+
+    /* ===== Component Tree ===== */
+    .tree {
+      background: #fff; border-radius: 12px; padding: 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+    .tree h3 { font-size: 15px; margin-bottom: 16px; color: #334; }
+    .tree-node {
+      font-size: 13px; line-height: 1.4; padding: 6px 0;
+    }
+    .tree-node .name {
+      font-weight: 600; background: #e8f4fd; padding: 3px 8px;
+      border-radius: 4px; display: inline-block;
+    }
+    .tree-node .desc { color: #667; margin-left: 6px; }
+    .tree-children { padding-left: 28px; border-left: 2px solid #e0e4ea; margin-left: 12px; }
+  </style>
+</head>
+<body>
+
+<h1>Stat Distributions — Архитектура</h1>
+<p class="subtitle">Как устроено взаимодействие Frontend и Backend, и как работает анимация</p>
+
+<!-- ===== INTERACTION ===== -->
+<h2>1. Взаимодействие Frontend и Backend</h2>
+<div class="interaction">
+  <div class="block frontend">
+    <h3>Frontend (React + Vite :5173)</h3>
+    <ul>
+      <li>UI на Consta UI Kit</li>
+      <li>Графики на Plotly.js</li>
+      <li>Форма параметров (3 варианта)</li>
+      <li>Анимация (progressive reveal)</li>
+      <li>Статистики в сайдбаре</li>
+    </ul>
+  </div>
+
+  <div class="arrow-col">
+    <div class="arrow">
+      <div class="label">GET /api/distributions</div>
+      <div class="line right"></div>
+      <div class="label" style="font-weight:400; color:#888">список распределений + параметры</div>
+    </div>
+    <div class="arrow">
+      <div class="label">POST /api/compute</div>
+      <div class="line right"></div>
+      <div class="label" style="font-weight:400; color:#888">{distribution, variants, num_samples}</div>
+    </div>
+    <div class="arrow">
+      <div class="line left"></div>
+      <div class="label" style="font-weight:400; color:#888">samples[] + theoretical + stats</div>
+    </div>
+  </div>
+
+  <div class="block backend">
+    <h3>Backend (FastAPI :8001)</h3>
+    <ul>
+      <li>scipy.stats — генерация выборок</li>
+      <li>scipy.stats — теоретические PDF/PMF</li>
+      <li>numpy — гистограммы, статистики</li>
+      <li>11 функций распределений</li>
+      <li>JSON API, без состояния</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== ANIMATION TIMELINE ===== -->
+<h2>2. Как работает анимация</h2>
+<div class="timeline">
+  <h3>Последовательность событий</h3>
+  <div class="steps">
+    <div class="step fe" data-num="1">
+      <span class="tag fe">FRONTEND</span>
+      Пользователь задаёт параметры 3 вариантов и нажимает <b>«Сгенерировать»</b>
+    </div>
+    <div class="step fe" data-num="2">
+      <span class="tag fe">FRONTEND</span>
+      <code>fetch POST /api/compute</code> — отправляет параметры на бэкенд
+    </div>
+    <div class="step be" data-num="3">
+      <span class="tag be">BACKEND</span>
+      <code>scipy.stats.*.rvs()</code> — генерирует <b>все N сэмплов</b> сразу для каждого варианта
+    </div>
+    <div class="step be" data-num="4">
+      <span class="tag be">BACKEND</span>
+      <code>scipy.stats.*.pdf()</code> — считает теоретическую кривую + <code>np.histogram()</code> + статистики
+    </div>
+    <div class="step be" data-num="5">
+      <span class="tag be">BACKEND</span>
+      Возвращает JSON: <code>samples[1000]</code>, <code>theoretical{x,y}</code>, <code>histogram{bins,counts}</code>, <code>stats{...}</code>
+    </div>
+    <div class="step fe" data-num="6">
+      <span class="tag fe">FRONTEND</span>
+      Сохраняет полный ответ в <code>results</code>, ставит <code>step = 0</code>, запускает анимацию
+    </div>
+    <div class="step anim" data-num="7">
+      <span class="tag anim">ANIMATION</span>
+      <code>setInterval(100ms)</code> — каждые 100мс увеличивает <code>step</code> на <code>speed</code> (от 1 до 500)
+    </div>
+    <div class="step anim" data-num="8">
+      <span class="tag anim">ANIMATION</span>
+      <code>samples.slice(0, step)</code> — графики видят только первые <code>step</code> точек
+    </div>
+    <div class="step anim" data-num="9">
+      <span class="tag anim">ANIMATION</span>
+      <b>SampleTraceChart</b>: линии растут слева направо<br>
+      <b>HistogramChart</b>: бары перестраиваются, приближаясь к теоретической кривой
+    </div>
+    <div class="step fe" data-num="10">
+      <span class="tag fe">FRONTEND</span>
+      <code>step >= totalSamples</code> — анимация останавливается. Пользователь видит итоговый результат
+    </div>
+  </div>
+</div>
+
+<!-- ===== DATA FLOW ===== -->
+<h2>3. Формат данных (API)</h2>
+<div class="dataflow">
+  <div class="json-label">POST /api/compute — Request:</div>
+  <div class="json-box">
+{<br>
+&nbsp;&nbsp;<span class="key">"distribution"</span>: <span class="str">"binomial"</span>,<br>
+&nbsp;&nbsp;<span class="key">"variants"</span>: [<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="key">"n"</span>: <span class="num">20</span>, <span class="key">"p"</span>: <span class="num">0.1</span> },<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="key">"n"</span>: <span class="num">20</span>, <span class="key">"p"</span>: <span class="num">0.5</span> },<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="key">"n"</span>: <span class="num">20</span>, <span class="key">"p"</span>: <span class="num">0.8</span> }<br>
+&nbsp;&nbsp;],<br>
+&nbsp;&nbsp;<span class="key">"num_samples"</span>: <span class="num">1000</span>,<br>
+&nbsp;&nbsp;<span class="key">"num_bins"</span>: <span class="num">30</span><br>
+}
+  </div>
+
+  <div class="json-label">POST /api/compute — Response (per variant):</div>
+  <div class="json-box">
+{<br>
+&nbsp;&nbsp;<span class="key">"label"</span>: <span class="str">"Выборка 1"</span>,<br>
+&nbsp;&nbsp;<span class="key">"color"</span>: <span class="str">"#e53935"</span>,<br>
+&nbsp;&nbsp;<span class="key">"samples"</span>: [<span class="num">2, 1, 3, 0, ...</span>], <span class="comment">// N values</span><br>
+&nbsp;&nbsp;<span class="key">"histogram"</span>: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"bin_edges"</span>: [<span class="num">-0.5, 0.5, 1.5, ...</span>],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"counts"</span>: [<span class="num">0.12, 0.28, ...</span>] <span class="comment">// density-normalized</span><br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;<span class="key">"theoretical"</span>: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"x"</span>: [<span class="num">0, 1, 2, ..., 20</span>],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"y"</span>: [<span class="num">0.12, 0.27, ...</span>] <span class="comment">// PMF or PDF</span><br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;<span class="key">"stats"</span>: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"mean"</span>: <span class="num">2.01</span>, <span class="key">"variance"</span>: <span class="num">1.82</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"std"</span>: <span class="num">1.35</span>, <span class="key">"median"</span>: <span class="num">2.0</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"min"</span>: <span class="num">0.0</span>, <span class="key">"max"</span>: <span class="num">7.0</span><br>
+&nbsp;&nbsp;}<br>
+}
+  </div>
+</div>
+
+<!-- ===== COMPONENT TREE ===== -->
+<h2>4. Дерево компонентов React</h2>
+<div class="tree">
+  <div class="tree-node">
+    <span class="name">App</span>
+    <span class="desc">— layout, загрузка списка распределений</span>
+    <div class="tree-children">
+      <div class="tree-node">
+        <span class="name">DistributionNav</span>
+        <span class="desc">— навигация (11 кнопок)</span>
+      </div>
+      <div class="tree-node">
+        <span class="name">StatsPanel</span>
+        <span class="desc">— статистики 3 выборок (mean, var, std, median, min, max)</span>
+      </div>
+      <div class="tree-node">
+        <span class="name">DistributionPage</span>
+        <span class="desc">— основная страница, state анимации</span>
+        <div class="tree-children">
+          <div class="tree-node">
+            <span class="name">ParamForm</span>
+            <span class="desc">— параметры 3 вариантов + размер выборки + кнопка + анимация</span>
+          </div>
+          <div class="tree-node">
+            <span class="name">SampleTraceChart</span>
+            <span class="desc">— линейный график выборок (Plotly)</span>
+          </div>
+          <div class="tree-node">
+            <span class="name">HistogramChart</span>
+            <span class="desc">— гистограмма + теоретическая кривая (Plotly)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

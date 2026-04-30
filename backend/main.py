@@ -1,5 +1,6 @@
 """FastAPI backend for statistical distributions visualization."""
 
+import numpy as np
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -42,6 +43,15 @@ def compute(request: ComputeRequest):
         result = compute_fn(variant_params, request.num_samples, request.num_bins)
         result["label"] = f"Выборка {i + 1}"
         result["color"] = VARIANT_COLORS[i % len(VARIANT_COLORS)]
+        samples = result["samples"]
+        result["stats"] = {
+            "mean": round(float(np.mean(samples)), 4),
+            "variance": round(float(np.var(samples)), 4),
+            "std": round(float(np.std(samples)), 4),
+            "median": round(float(np.median(samples)), 4),
+            "min": round(float(np.min(samples)), 4),
+            "max": round(float(np.max(samples)), 4),
+        }
         results.append(result)
 
     return {"variants": results}
