@@ -82,7 +82,7 @@ export function ParamForm({
           </div>
         ))}
         <TextField
-          label="Выборка"
+          label="Размер выборки"
           type="number"
           value={String(numSamples)}
           onChange={(value) => {

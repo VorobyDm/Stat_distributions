@@ -19,11 +19,11 @@ export function SampleTraceChart({ variants, totalSamples }: Props) {
     <Plot
       data={data}
       layout={{
-        title: "Последовательность выборок",
-        xaxis: { title: "Итерация", range: [0, totalSamples] },
-        yaxis: { title: "Значение" },
-        height: 300,
-        margin: { t: 40, b: 50, l: 60, r: 20 },
+        title: { text: "Генерация трёх случайных выборок", font: { size: 16 } },
+        xaxis: { title: { text: "Итерация", standoff: 10 }, range: [0, totalSamples] },
+        yaxis: { title: { text: "Значение", standoff: 10 } },
+        height: 340,
+        margin: { t: 50, b: 60, l: 70, r: 20 },
         showlegend: true,
         legend: { x: 1, xanchor: "right", y: 1 },
       }}

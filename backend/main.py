@@ -40,7 +40,7 @@ def compute(request: ComputeRequest):
 
     for i, variant_params in enumerate(request.variants):
         result = compute_fn(variant_params, request.num_samples, request.num_bins)
-        result["label"] = f"Variant {i + 1}"
+        result["label"] = f"Выборка {i + 1}"
         result["color"] = VARIANT_COLORS[i % len(VARIANT_COLORS)]
         results.append(result)
 

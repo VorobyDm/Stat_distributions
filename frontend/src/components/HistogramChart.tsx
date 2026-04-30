@@ -99,14 +99,17 @@ export function HistogramChart({ variants, allVariants, discrete }: Props) {
     <Plot
       data={data}
       layout={{
-        title: discrete
-          ? "Частота выборок и теоретическая PMF"
-          : "Гистограмма выборок и теоретическая кривая",
+        title: {
+          text: discrete
+            ? "Сравнение эмпирической частоты с теоретической вероятностью (PMF)"
+            : "Сравнение эмпирической гистограммы с теоретической плотностью (PDF)",
+          font: { size: 16 },
+        },
         barmode: "overlay",
-        xaxis: { title: "x", range: [xMin - xPad, xMax + xPad] },
-        yaxis: { title: discrete ? "Вероятность" : "Плотность" },
-        height: 450,
-        margin: { t: 40, b: 50, l: 60, r: 20 },
+        xaxis: { title: { text: "Значение x", standoff: 10 }, range: [xMin - xPad, xMax + xPad] },
+        yaxis: { title: { text: discrete ? "Вероятность" : "Плотность", standoff: 10 } },
+        height: 490,
+        margin: { t: 50, b: 60, l: 70, r: 20 },
         showlegend: true,
         legend: { x: 1, xanchor: "right", y: 1 },
       }}

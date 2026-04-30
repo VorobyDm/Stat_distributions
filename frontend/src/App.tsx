@@ -61,7 +61,7 @@ export default function App() {
           weight="bold"
           style={{ padding: "0 16px", marginBottom: 16 }}
         >
-          Распределения
+          Статистические распределения
         </Text>
         <DistributionNav
           items={distributions}
