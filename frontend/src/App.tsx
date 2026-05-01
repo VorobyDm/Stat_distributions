@@ -108,6 +108,18 @@ export default function App() {
     return { ...base, ...paramOverrides };
   }, [dist, variantIdx, paramOverrides]);
 
+  // Variant labels — active variant reflects current slider values when user moved them
+  const variantLabels = useMemo<string[]>(() => {
+    if (!dist) return [];
+    const hasOverrides = Object.keys(paramOverrides).length > 0;
+    return dist.default_variants.map((v, i) => {
+      if (i === variantIdx && hasOverrides) {
+        return buildVariantLabel(dist, paramValues);
+      }
+      return v.label;
+    });
+  }, [dist, variantIdx, paramOverrides, paramValues]);
+
   const handleSelectDistribution = (id: string) => {
     setActiveId(id);
   };
@@ -235,6 +247,7 @@ export default function App() {
           onSelectDistribution={handleSelectDistribution}
           dist={dist}
           variantIdx={variantIdx}
+          variantLabels={variantLabels}
           onSelectVariant={handleSelectVariant}
           paramValues={paramValues}
           onParamChange={handleParamChange}
@@ -262,22 +275,28 @@ export default function App() {
   );
 }
 
+const SYM: Record<string, string> = {
+  mu: "μ",
+  sigma: "σ",
+  lambda: "λ",
+  alpha: "α",
+  beta: "β",
+  theta: "θ",
+  nu: "ν",
+  d1: "d₁",
+  d2: "d₂",
+};
+
+function formatParamValue(value: number, isInt: boolean): string {
+  if (isInt) return String(Math.round(value));
+  return Number.isInteger(value) ? String(value) : Number(value.toFixed(3)).toString();
+}
+
 function buildVariantLabel(
   dist: DistributionConfig,
   params: Record<string, number>,
 ): string {
-  const SYM: Record<string, string> = {
-    mu: "μ",
-    sigma: "σ",
-    lambda: "λ",
-    alpha: "α",
-    beta: "β",
-    theta: "θ",
-    nu: "ν",
-    d1: "d₁",
-    d2: "d₂",
-  };
   return dist.params
-    .map((p) => `${SYM[p.name] ?? p.name}=${params[p.name]}`)
+    .map((p) => `${SYM[p.name] ?? p.name}=${formatParamValue(params[p.name], p.type === "int")}`)
     .join(", ");
 }

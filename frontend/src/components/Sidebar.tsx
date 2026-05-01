@@ -39,6 +39,7 @@ interface Props {
 
   dist: DistributionConfig;
   variantIdx: number;
+  variantLabels: string[];
   onSelectVariant: (idx: number) => void;
 
   paramValues: Record<string, number>;
@@ -61,6 +62,7 @@ export function Sidebar({
   onSelectDistribution,
   dist,
   variantIdx,
+  variantLabels,
   onSelectVariant,
   paramValues,
   onParamChange,
@@ -132,7 +134,7 @@ export function Sidebar({
               type="button"
             >
               <span className="num">ВАРИАНТ {i + 1}</span>
-              <span className="vlbl">{v.label}</span>
+              <span className="vlbl">{variantLabels[i] ?? v.label}</span>
             </button>
           ))}
         </div>
