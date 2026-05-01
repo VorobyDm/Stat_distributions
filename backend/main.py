@@ -1,9 +1,12 @@
 """FastAPI backend for statistical distributions visualization."""
 
+from collections import Counter
+
 import numpy as np
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from scipy import stats as scipy_stats
 
 from distributions import DISTRIBUTIONS, DISTRIBUTION_SCHEMAS
 
@@ -16,14 +19,51 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-VARIANT_COLORS = ["#e53935", "#43a047", "#1e88e5"]
-
 
 class ComputeRequest(BaseModel):
     distribution: str
     variants: list[dict]
     num_samples: int = 1000
     num_bins: int = 30
+
+
+def compute_stats(samples: list, discrete: bool) -> dict:
+    arr = np.array(samples, dtype=float)
+    mean = float(np.mean(arr))
+    variance = float(np.var(arr))
+    std = float(np.std(arr))
+    median = float(np.median(arr))
+    q25 = float(np.percentile(arr, 25))
+    q75 = float(np.percentile(arr, 75))
+    sample_min = float(np.min(arr))
+    sample_max = float(np.max(arr))
+    skewness = float(scipy_stats.skew(arr))
+    kurtosis = float(scipy_stats.kurtosis(arr))  # excess kurtosis
+
+    # Mode: for discrete — most frequent integer; for continuous — middle of densest bin
+    if discrete:
+        rounded = [int(round(s)) for s in samples]
+        mode_val = float(Counter(rounded).most_common(1)[0][0])
+    else:
+        counts, edges = np.histogram(arr, bins=20)
+        idx = int(np.argmax(counts))
+        mode_val = float((edges[idx] + edges[idx + 1]) / 2)
+
+    return {
+        "mean": round(mean, 3),
+        "variance": round(variance, 3),
+        "std": round(std, 3),
+        "median": round(median, 3),
+        "mode": round(mode_val, 3),
+        "min": round(sample_min, 3),
+        "max": round(sample_max, 3),
+        "range": round(sample_max - sample_min, 3),
+        "q25": round(q25, 3),
+        "q75": round(q75, 3),
+        "iqr": round(q75 - q25, 3),
+        "skewness": round(skewness, 3),
+        "kurtosis": round(kurtosis, 3),
+    }
 
 
 @app.get("/api/distributions")
@@ -36,22 +76,18 @@ def compute(request: ComputeRequest):
     if request.distribution not in DISTRIBUTIONS:
         raise HTTPException(status_code=400, detail=f"Unknown distribution: {request.distribution}")
 
+    schema = next((d for d in DISTRIBUTION_SCHEMAS if d["id"] == request.distribution), None)
+    discrete = schema["type"] == "discrete" if schema else False
+
     compute_fn = DISTRIBUTIONS[request.distribution]
     results = []
 
-    for i, variant_params in enumerate(request.variants):
-        result = compute_fn(variant_params, request.num_samples, request.num_bins)
-        result["label"] = f"Выборка {i + 1}"
-        result["color"] = VARIANT_COLORS[i % len(VARIANT_COLORS)]
-        samples = result["samples"]
-        result["stats"] = {
-            "mean": round(float(np.mean(samples)), 4),
-            "variance": round(float(np.var(samples)), 4),
-            "std": round(float(np.std(samples)), 4),
-            "median": round(float(np.median(samples)), 4),
-            "min": round(float(np.min(samples)), 4),
-            "max": round(float(np.max(samples)), 4),
-        }
+    for i, variant in enumerate(request.variants):
+        # Variant may include label + numeric params; pass only params to compute_fn
+        params = {k: v for k, v in variant.items() if k != "label"}
+        result = compute_fn(params, request.num_samples, request.num_bins)
+        result["label"] = variant.get("label", f"Вариант {i + 1}")
+        result["stats"] = compute_stats(result["samples"], discrete)
         results.append(result)
 
     return {"variants": results}

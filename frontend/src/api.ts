@@ -10,7 +10,7 @@ export async function fetchDistributions(): Promise<DistributionConfig[]> {
 
 export async function computeDistribution(
   distribution: string,
-  variants: Record<string, number>[],
+  variants: Record<string, number | string>[],
   numSamples = 1000,
   numBins = 30
 ): Promise<ComputeResponse> {
