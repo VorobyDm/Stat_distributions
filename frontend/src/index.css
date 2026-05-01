@@ -113,7 +113,7 @@ body {
 /* ---- Root layout ---- */
 .v2-root {
   display: grid;
-  grid-template-columns: 420px 1fr;
+  grid-template-columns: 540px 1fr;
   background: var(--ds-paper);
   font-family: 'Inter', sans-serif;
   color: var(--ds-ink);
@@ -126,10 +126,10 @@ body {
 .v2-panel {
   background: var(--ds-paper-alt);
   border-right: 2px solid var(--ds-ink);
-  padding: 18px 20px;
+  padding: 14px 20px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
   position: relative;
   overflow-y: auto;
   overflow-x: hidden;
@@ -147,7 +147,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  padding-top: 8px;
+  padding-top: 4px;
 }
 .v2-panel-h .title {
   font-family: 'Newsreader', serif;
@@ -166,7 +166,7 @@ body {
 /* Pills (distribution selector) */
 .v2-pills {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 4px;
 }
 .v2-pill {
@@ -191,8 +191,8 @@ body {
   letter-spacing: 0.22em;
   color: var(--ds-muted);
   text-transform: uppercase;
-  padding-top: 6px;
-  padding-bottom: 4px;
+  padding-top: 2px;
+  padding-bottom: 0;
   display: flex;
   gap: 10px;
   align-items: center;
@@ -219,7 +219,7 @@ body {
   letter-spacing: 0.2em;
   color: var(--ds-muted);
   text-transform: uppercase;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
   display: flex;
   gap: 8px;
   align-items: center;
@@ -257,7 +257,7 @@ body {
   letter-spacing: 0.2em;
   color: var(--ds-muted);
   text-transform: uppercase;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
 }
 .v2-formula-card .formula {
   font-family: 'Newsreader', serif;
