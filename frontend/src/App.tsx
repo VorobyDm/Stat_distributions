@@ -28,11 +28,19 @@ function readPalette(): string[] {
   ];
 }
 
-function variantToParams(v: DistributionVariant): Record<string, number> {
+function variantToParams(
+  v: DistributionVariant,
+  params?: { name: string; default: number }[],
+): Record<string, number> {
   const out: Record<string, number> = {};
   for (const [key, value] of Object.entries(v)) {
     if (key === "label") continue;
     if (typeof value === "number") out[key] = value;
+  }
+  if (params) {
+    for (const p of params) {
+      if (!(p.name in out)) out[p.name] = p.default;
+    }
   }
   return out;
 }
@@ -45,8 +53,8 @@ export default function App() {
 
   const [variantIdx, setVariantIdx] = useState(0);
   const [highlight, setHighlight] = useState(0);
-  const [paramOverrides, setParamOverrides] = useState<Record<string, number>>(
-    {},
+  const [variantParams, setVariantParams] = useState<Record<string, number>[]>(
+    [],
   );
   const [numSamples, setNumSamples] = useState(400);
 
@@ -87,38 +95,39 @@ export default function App() {
     [distributions, activeId],
   );
 
-  // Reset variant/highlight/overrides on distribution change
+  // Reset variants/highlight on distribution change
   useEffect(() => {
     if (!dist) return;
+    setVariantParams(
+      dist.default_variants.map((v) => variantToParams(v, dist.params)),
+    );
     setVariantIdx(0);
     setHighlight(0);
-    setParamOverrides({});
     setResults(null);
     setComputeError("");
   }, [activeId, dist]);
 
-  // Effective param values: variant defaults + user overrides
+  // Effective param values for the currently active variant
   const paramValues = useMemo<Record<string, number>>(() => {
     if (!dist) return {};
+    const current = variantParams[variantIdx];
+    if (current) return current;
     const variant = dist.default_variants[variantIdx];
-    const base = variant ? variantToParams(variant) : {};
-    for (const p of dist.params) {
-      if (!(p.name in base)) base[p.name] = p.default;
-    }
-    return { ...base, ...paramOverrides };
-  }, [dist, variantIdx, paramOverrides]);
+    return variant ? variantToParams(variant, dist.params) : {};
+  }, [dist, variantIdx, variantParams]);
 
-  // Variant labels — active variant reflects current slider values when user moved them
+  // Variant labels — show generated label when current values differ from the original variant defaults
   const variantLabels = useMemo<string[]>(() => {
-    if (!dist) return [];
-    const hasOverrides = Object.keys(paramOverrides).length > 0;
+    if (!dist || variantParams.length === 0) {
+      return dist?.default_variants.map((v) => v.label) ?? [];
+    }
     return dist.default_variants.map((v, i) => {
-      if (i === variantIdx && hasOverrides) {
-        return buildVariantLabel(dist, paramValues);
-      }
-      return v.label;
+      const orig = variantToParams(v, dist.params);
+      const current = variantParams[i] ?? orig;
+      const modified = dist.params.some((p) => current[p.name] !== orig[p.name]);
+      return modified ? buildVariantLabel(dist, current) : v.label;
     });
-  }, [dist, variantIdx, paramOverrides, paramValues]);
+  }, [dist, variantParams]);
 
   const handleSelectDistribution = (id: string) => {
     setActiveId(id);
@@ -126,36 +135,39 @@ export default function App() {
 
   const handleSelectVariant = (idx: number) => {
     setVariantIdx(idx);
-    setParamOverrides({});
   };
 
   const handleParamChange = (name: string, value: number) => {
-    setParamOverrides((prev) => ({ ...prev, [name]: value }));
+    setVariantParams((prev) => {
+      const next = prev.slice();
+      next[variantIdx] = { ...next[variantIdx], [name]: value };
+      return next;
+    });
   };
 
   const handleReset = () => {
-    setParamOverrides({});
+    if (!dist) return;
+    setVariantParams(
+      dist.default_variants.map((v) => variantToParams(v, dist.params)),
+    );
     setVariantIdx(0);
     setResults(null);
     setComputeError("");
   };
 
   const handleGenerate = async () => {
-    if (!dist) return;
+    if (!dist || variantParams.length === 0) return;
     setComputeLoading(true);
     setComputeError("");
     try {
-      // Send all 3 variants — the chart shows three curves side by side.
       const variants = dist.default_variants.map((v, i) => {
-        const baseParams = variantToParams(v);
-        // For currently-active variant apply user overrides
-        const params =
-          i === variantIdx ? { ...baseParams, ...paramOverrides } : baseParams;
-        const label =
-          i === variantIdx && Object.keys(paramOverrides).length > 0
-            ? buildVariantLabel(dist, params)
-            : v.label;
-        return { label, ...params };
+        const orig = variantToParams(v, dist.params);
+        const current = variantParams[i] ?? orig;
+        const modified = dist.params.some(
+          (p) => current[p.name] !== orig[p.name],
+        );
+        const label = modified ? buildVariantLabel(dist, current) : v.label;
+        return { label, ...current };
       });
       const data = await computeDistribution(dist.id, variants, numSamples);
       setResults(data);
