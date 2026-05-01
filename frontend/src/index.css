@@ -24,18 +24,27 @@
 }
 
 :root[data-theme="dark"] {
-  --ds-paper: #15161a;
-  --ds-paper-alt: #1d1f24;
-  --ds-ink: #f3efe5;
-  --ds-ink-soft: #c0bcb1;
-  --ds-muted: #777570;
-  --ds-rule: #2c2e34;
-  --ds-grid: #25272d;
-  --ds-accent: oklch(74% 0.14 65);
-  --ds-accent-soft: oklch(35% 0.08 65);
-  --p1: oklch(74% 0.14 60);
-  --p2: oklch(72% 0.13 240);
-  --p3: oklch(74% 0.16 350);
+  /* Surfaces — cool off-black with a faint blue undertone */
+  --ds-paper:     #0e1116;  /* main background */
+  --ds-paper-alt: #161a21;  /* sidebar + raised cards (chart, examples header) */
+
+  /* Text — cool off-white, easy on the eyes */
+  --ds-ink:      #c9d1d9;   /* primary text          ~12:1 contrast on paper */
+  --ds-ink-soft: #9ba3ac;   /* secondary text        ~7:1 */
+  --ds-muted:    #6b7079;   /* captions, mono labels ~4.5:1 (AA) */
+
+  /* Lines */
+  --ds-rule: #262c35;       /* card borders, dividers */
+  --ds-grid: #1d222a;       /* chart grid lines (dimmer than rules) */
+
+  /* Accent — calm cool blue, harmonised with the variant palette */
+  --ds-accent:      oklch(72% 0.10 220);
+  --ds-accent-soft: oklch(28% 0.07 220);
+
+  /* Variant palette — three cool, distinguishable hues */
+  --p1: oklch(75% 0.11 200);  /* cyan */
+  --p2: oklch(72% 0.12 260);  /* indigo */
+  --p3: oklch(73% 0.12 310);  /* cool magenta / lavender */
 }
 
 * { box-sizing: border-box; }

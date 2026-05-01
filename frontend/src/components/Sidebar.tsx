@@ -189,7 +189,7 @@ export function Sidebar({
         <input
           type="range"
           min={10}
-          max={2000}
+          max={10000}
           step={10}
           value={numSamples}
           onChange={(e) => onNumSamplesChange(Number(e.target.value))}
