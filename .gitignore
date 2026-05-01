@@ -19,3 +19,7 @@ frontend/.env.production
 .idea/
 .DS_Store
 Thumbs.db
+
+# Claude Code — local instructions and settings, not for public repo
+CLAUDE.md
+.claude/
