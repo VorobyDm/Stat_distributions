@@ -1,19 +1,28 @@
 /* ---- Design tokens (Stat Lab) ---- */
 :root {
-  /* Light theme: warm paper-ish like a textbook */
-  --ds-paper: #fbf9f4;
-  --ds-paper-alt: #f3efe6;
-  --ds-ink: #1a1a1f;
-  --ds-ink-soft: #4a4a52;
-  --ds-muted: #8a8780;
-  --ds-rule: #d9d4c6;
-  --ds-grid: #e3decf;
-  --ds-accent: oklch(64% 0.15 55);
-  --ds-accent-soft: oklch(92% 0.06 70);
-  /* Variant palette — warm, distinguishable */
-  --p1: oklch(60% 0.16 50);
-  --p2: oklch(55% 0.13 250);
-  --p3: oklch(60% 0.16 350);
+  /* Light theme: warm "textbook paper" — all surfaces and text share the same warm undertone */
+
+  /* Surfaces — warm cream */
+  --ds-paper:     #faf7f0;  /* main background */
+  --ds-paper-alt: #f1ede2;  /* sidebar + raised cards */
+
+  /* Text — warm grays, harmonised with paper (no cold blue undertone) */
+  --ds-ink:      #1c1a14;   /* primary text         ~15:1 contrast (AAA) */
+  --ds-ink-soft: #524e44;   /* secondary text       ~8:1 (AAA) */
+  --ds-muted:    #8a8478;   /* captions, mono labels ~3.6:1 (AA for small) */
+
+  /* Lines */
+  --ds-rule: #d6cfbe;       /* card borders, dividers */
+  --ds-grid: #e0dac9;       /* chart grid lines (lighter than rules) */
+
+  /* Accent — calm amber, the warm counterpart of the dark theme blue */
+  --ds-accent:      oklch(62% 0.14 55);
+  --ds-accent-soft: oklch(93% 0.05 70);
+
+  /* Variant palette — three distinguishable hues, balanced for a warm background */
+  --p1: oklch(60% 0.16 40);   /* amber-orange */
+  --p2: oklch(56% 0.12 200);  /* deep teal (cool counterpoint, but greener than blue) */
+  --p3: oklch(58% 0.15 340);  /* warm magenta-rose */
 
   /* Type scale (5 steps, base 16, ratio ~1.25) */
   --fs-micro: 10px;    /* mono captions, group titles, eyebrow, numeric values in tables */
