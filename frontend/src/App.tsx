@@ -219,11 +219,29 @@ export default function App() {
           </span>
           <span className="sub">статистическая лаборатория · v0.1</span>
         </div>
-        <div
-          className="v2-theme-toggle"
-          role="radiogroup"
-          aria-label="Тема интерфейса"
-        >
+        <div className="v2-topbar-right">
+          <a
+            className="v2-mail"
+            href="mailto:dmitry.vorobev@ungservice.com"
+            title="Написать автору"
+            aria-label="Написать автору"
+          >
+            <svg
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinejoin="round"
+            >
+              <rect x="2" y="4" width="12" height="9" rx="1" />
+              <path d="M2 5l6 4 6-4" />
+            </svg>
+          </a>
+          <div
+            className="v2-theme-toggle"
+            role="radiogroup"
+            aria-label="Тема интерфейса"
+          >
           <button
             type="button"
             className={"opt " + (theme === "light" ? "active" : "")}
@@ -263,6 +281,7 @@ export default function App() {
             </svg>
             Dark
           </button>
+          </div>
         </div>
       </header>
 

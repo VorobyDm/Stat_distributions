@@ -1,30 +1,41 @@
 """FastAPI backend for statistical distributions visualization."""
 
+import os
 from collections import Counter
 
 import numpy as np
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from scipy import stats as scipy_stats
 
 from distributions import DISTRIBUTIONS, DISTRIBUTION_SCHEMAS
 
 app = FastAPI(title="Stat Distributions API")
 
+# CORS origins come from env so prod and dev have different lists.
+# Comma-separated list, e.g. "https://ungservice.com,http://localhost:5173".
+_origins_env = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173,http://localhost:5174")
+ALLOWED_ORIGINS = [o.strip() for o in _origins_env.split(",") if o.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=ALLOWED_ORIGINS,
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type"],
 )
 
 
 class ComputeRequest(BaseModel):
     distribution: str
     variants: list[dict]
-    num_samples: int = 1000
-    num_bins: int = 30
+    num_samples: int = Field(default=500, ge=10, le=10000)
+    num_bins: int = Field(default=30, ge=5, le=100)
+
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
 
 
 def compute_stats(samples: list, discrete: bool) -> dict:

@@ -1,5 +1,21 @@
+# Dependencies / build output
 node_modules/
 dist/
 __pycache__/
 *.pyc
 .vite/
+
+# Environment files — NEVER commit secrets
+.env
+.env.local
+.env.production
+.env.*.local
+backend/.env
+frontend/.env
+frontend/.env.production
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

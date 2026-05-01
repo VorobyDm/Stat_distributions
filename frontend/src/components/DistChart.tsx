@@ -8,9 +8,16 @@ interface Props {
   area?: boolean;
 }
 
+type HoverState = {
+  screenX: number;
+  dataX: number;
+  values: { label: string; color: string; y: number }[];
+};
+
 export function DistChart({ variants, type, palette, area = true }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [size, setSize] = useState({ width: 600, height: 240 });
+  const [hover, setHover] = useState<HoverState | null>(null);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -47,19 +54,71 @@ export function DistChart({ variants, type, palette, area = true }: Props) {
     height - padB - ((y - yMin) / (yMax - yMin || 1)) * (height - padT - padB);
 
   const tickXs: number[] = [];
-  for (let i = 0; i <= 4; i++) tickXs.push(xMin + (i / 4) * (xMax - xMin));
+  if (type === "discrete") {
+    const lo = Math.ceil(xMin);
+    const hi = Math.floor(xMax);
+    const step = Math.max(1, Math.round((hi - lo) / 4));
+    for (let x = lo; x <= hi; x += step) tickXs.push(x);
+    if (tickXs[tickXs.length - 1] !== hi) tickXs.push(hi);
+  } else {
+    for (let i = 0; i <= 4; i++) tickXs.push(xMin + (i / 4) * (xMax - xMin));
+  }
   const tickYs: number[] = [];
   for (let i = 0; i <= 3; i++) tickYs.push((i / 3) * yMax);
 
   const formatNum = (n: number) => (Number.isInteger(n) ? `${n}` : n.toFixed(1));
 
+  // Look up y(x) for a variant — interpolate for continuous, snap for discrete
+  function yAt(v: VariantResult, x: number): number {
+    const xs = v.theoretical.x;
+    const ys = v.theoretical.y;
+    if (xs.length === 0) return 0;
+    if (type === "discrete") {
+      const idx = xs.findIndex((vx) => Math.abs(vx - x) < 0.5);
+      return idx >= 0 ? ys[idx] : 0;
+    }
+    let i0 = 0;
+    while (i0 < xs.length - 1 && xs[i0 + 1] < x) i0++;
+    const i1 = Math.min(i0 + 1, xs.length - 1);
+    const x0 = xs[i0];
+    const x1 = xs[i1];
+    if (x0 === x1) return ys[i0];
+    const t = (x - x0) / (x1 - x0);
+    return ys[i0] + t * (ys[i1] - ys[i0]);
+  }
+
+  const handleMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    if (mouseX < padL || mouseX > width - padR) {
+      setHover(null);
+      return;
+    }
+    const dataX =
+      xMin + ((mouseX - padL) / (width - padL - padR)) * (xMax - xMin);
+    const snappedX = type === "discrete" ? Math.round(dataX) : dataX;
+    const values = variants.map((v, i) => ({
+      label: v.label,
+      color: palette[i % palette.length],
+      y: yAt(v, snappedX),
+    }));
+    setHover({ screenX: sx(snappedX), dataX: snappedX, values });
+  };
+
+  const handleMouseLeave = () => setHover(null);
+
   return (
-    <div ref={containerRef} style={{ width: "100%", height: "100%" }}>
+    <div
+      ref={containerRef}
+      style={{ width: "100%", height: "100%", position: "relative" }}
+    >
       <svg
         width={width}
         height={height}
         viewBox={`0 0 ${width} ${height}`}
         style={{ display: "block" }}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
       >
         {/* Grid lines */}
         {tickYs.map((t, i) => (
@@ -183,7 +242,55 @@ export function DistChart({ variants, type, palette, area = true }: Props) {
             </g>
           );
         })}
+
+        {/* Hover crosshair + dots on each curve */}
+        {hover && (
+          <g pointerEvents="none">
+            <line
+              x1={hover.screenX}
+              x2={hover.screenX}
+              y1={padT}
+              y2={height - padB}
+              stroke="var(--ds-muted)"
+              strokeWidth="1"
+              strokeDasharray="2 4"
+              opacity="0.7"
+            />
+            {hover.values.map((v, i) => (
+              <circle
+                key={i}
+                cx={hover.screenX}
+                cy={sy(v.y)}
+                r={4}
+                fill={v.color}
+                stroke="var(--ds-paper)"
+                strokeWidth="2"
+              />
+            ))}
+          </g>
+        )}
       </svg>
+
+      {hover && (
+        <div
+          className="v2-chart-tooltip"
+          style={{
+            left: Math.min(width - 8, Math.max(8, hover.screenX)),
+            top: padT,
+          }}
+        >
+          <div className="x">
+            x = {type === "discrete" ? hover.dataX : hover.dataX.toFixed(2)}
+          </div>
+          {hover.values.map((v, i) => (
+            <div key={i} className="row">
+              <span className="dot" style={{ background: v.color }} />
+              <span className="label">{v.label}</span>
+              <span className="value">{v.y.toFixed(4)}</span>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

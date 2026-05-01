@@ -1,6 +1,8 @@
 import type { ComputeResponse, DistributionConfig } from "./types";
 
-const API_BASE = "";
+// In dev, Vite proxies /api/* to localhost:8001 (vite.config.ts).
+// In prod, set VITE_API_URL=https://api.your-domain.com (no trailing slash).
+const API_BASE = import.meta.env.VITE_API_URL ?? "";
 
 export async function fetchDistributions(): Promise<DistributionConfig[]> {
   const res = await fetch(`${API_BASE}/api/distributions`);
