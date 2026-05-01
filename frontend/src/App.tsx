@@ -78,13 +78,22 @@ export default function App() {
 
   const palette = useMemo(() => readPalette(), [paletteVersion, theme]);
 
-  // Fetch distributions on mount
+  // Fetch distributions on mount and select an initial one
   useEffect(() => {
     fetchDistributions()
       .then((data) => {
         setDistributions(data);
         const initial = data.find((d) => d.id === "normal") ?? data[0];
-        if (initial) setActiveId(initial.id);
+        if (initial) {
+          setActiveId(initial.id);
+          setVariantParams(
+            initial.default_variants.map((v) =>
+              variantToParams(v, initial.params),
+            ),
+          );
+          setVariantIdx(0);
+          setHighlight(0);
+        }
       })
       .catch((e: Error) => setBootError(e.message))
       .finally(() => setBootLoading(false));
@@ -95,42 +104,47 @@ export default function App() {
     [distributions, activeId],
   );
 
-  // Reset variants/highlight on distribution change
-  useEffect(() => {
-    if (!dist) return;
+  // True when stored variantParams correspond to dist's current param set
+  const paramsMatchDist = useMemo(() => {
+    if (!dist || variantParams.length !== dist.default_variants.length) {
+      return false;
+    }
+    return variantParams.every(
+      (vp) => vp && dist.params.every((p) => p.name in vp),
+    );
+  }, [dist, variantParams]);
+
+  // Effective param values for the currently active variant
+  const paramValues = useMemo<Record<string, number>>(() => {
+    if (!dist) return {};
+    if (paramsMatchDist) return variantParams[variantIdx];
+    const variant = dist.default_variants[variantIdx];
+    return variant ? variantToParams(variant, dist.params) : {};
+  }, [dist, variantIdx, variantParams, paramsMatchDist]);
+
+  // Variant labels — show generated label when current values differ from the original variant defaults
+  const variantLabels = useMemo<string[]>(() => {
+    if (!dist) return [];
+    if (!paramsMatchDist) return dist.default_variants.map((v) => v.label);
+    return dist.default_variants.map((v, i) => {
+      const orig = variantToParams(v, dist.params);
+      const current = variantParams[i];
+      const modified = dist.params.some((p) => current[p.name] !== orig[p.name]);
+      return modified ? buildVariantLabel(dist, current) : v.label;
+    });
+  }, [dist, variantParams, paramsMatchDist]);
+
+  const handleSelectDistribution = (id: string) => {
+    const next = distributions.find((d) => d.id === id);
+    if (!next) return;
+    setActiveId(id);
     setVariantParams(
-      dist.default_variants.map((v) => variantToParams(v, dist.params)),
+      next.default_variants.map((v) => variantToParams(v, next.params)),
     );
     setVariantIdx(0);
     setHighlight(0);
     setResults(null);
     setComputeError("");
-  }, [activeId, dist]);
-
-  // Effective param values for the currently active variant
-  const paramValues = useMemo<Record<string, number>>(() => {
-    if (!dist) return {};
-    const current = variantParams[variantIdx];
-    if (current) return current;
-    const variant = dist.default_variants[variantIdx];
-    return variant ? variantToParams(variant, dist.params) : {};
-  }, [dist, variantIdx, variantParams]);
-
-  // Variant labels — show generated label when current values differ from the original variant defaults
-  const variantLabels = useMemo<string[]>(() => {
-    if (!dist || variantParams.length === 0) {
-      return dist?.default_variants.map((v) => v.label) ?? [];
-    }
-    return dist.default_variants.map((v, i) => {
-      const orig = variantToParams(v, dist.params);
-      const current = variantParams[i] ?? orig;
-      const modified = dist.params.some((p) => current[p.name] !== orig[p.name]);
-      return modified ? buildVariantLabel(dist, current) : v.label;
-    });
-  }, [dist, variantParams]);
-
-  const handleSelectDistribution = (id: string) => {
-    setActiveId(id);
   };
 
   const handleSelectVariant = (idx: number) => {
@@ -156,13 +170,13 @@ export default function App() {
   };
 
   const handleGenerate = async () => {
-    if (!dist || variantParams.length === 0) return;
+    if (!dist) return;
     setComputeLoading(true);
     setComputeError("");
     try {
       const variants = dist.default_variants.map((v, i) => {
         const orig = variantToParams(v, dist.params);
-        const current = variantParams[i] ?? orig;
+        const current = paramsMatchDist ? variantParams[i] : orig;
         const modified = dist.params.some(
           (p) => current[p.name] !== orig[p.name],
         );
