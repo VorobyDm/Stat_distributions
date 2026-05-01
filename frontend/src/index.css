@@ -14,6 +14,13 @@
   --p1: oklch(60% 0.16 50);
   --p2: oklch(55% 0.13 250);
   --p3: oklch(60% 0.16 350);
+
+  /* Type scale (5 steps, base 16, ratio ~1.25) */
+  --fs-micro: 10px;    /* mono captions, group titles, eyebrow, numeric values in tables */
+  --fs-small: 13px;    /* secondary text: about, examples, hints, descriptions, labels */
+  --fs-body: 16px;     /* primary readable text: formula, knob name, section titles, buttons */
+  --fs-heading: 20px;  /* component headers: sidebar title, topbar logo, metrics value */
+  --fs-hero: 40px;     /* hero title only */
 }
 
 :root[data-theme="dark"] {
@@ -65,7 +72,7 @@ body {
 .v2-topbar .brand { display: flex; gap: 14px; align-items: baseline; }
 .v2-topbar .logo {
   font-family: 'Newsreader', serif;
-  font-size: 22px;
+  font-size: var(--fs-heading);
   font-weight: 600;
   letter-spacing: -0.01em;
 }
@@ -76,7 +83,7 @@ body {
 }
 .v2-topbar .sub {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: var(--fs-micro);
   letter-spacing: 0.2em;
   color: var(--ds-muted);
   text-transform: uppercase;
@@ -99,7 +106,7 @@ body {
   padding: 6px 12px;
   border-radius: 999px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
+  font-size: var(--fs-small);
   letter-spacing: 0.05em;
   color: var(--ds-muted);
   transition: 120ms;
@@ -143,26 +150,6 @@ body {
   background: repeating-linear-gradient(90deg,
     var(--ds-accent) 0 12px, transparent 12px 24px);
 }
-.v2-panel-h {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  padding-top: 4px;
-}
-.v2-panel-h .title {
-  font-family: 'Newsreader', serif;
-  font-size: 22px;
-  font-weight: 600;
-}
-.v2-panel-h .badge {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 9px;
-  padding: 4px 8px;
-  background: var(--ds-ink);
-  color: var(--ds-paper);
-  letter-spacing: 0.2em;
-}
-
 /* Pills (distribution selector) */
 .v2-pills {
   display: grid;
@@ -172,7 +159,7 @@ body {
 .v2-pill {
   padding: 6px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 9px;
+  font-size: var(--fs-micro);
   background: var(--ds-paper);
   color: var(--ds-ink);
   border: 1px solid var(--ds-rule);
@@ -187,7 +174,7 @@ body {
 /* Section divider */
 .v2-section-divider {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 9px;
+  font-size: var(--fs-micro);
   letter-spacing: 0.22em;
   color: var(--ds-muted);
   text-transform: uppercase;
@@ -215,7 +202,7 @@ body {
 }
 .v2-about .lbl {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 9px;
+  font-size: var(--fs-micro);
   letter-spacing: 0.2em;
   color: var(--ds-muted);
   text-transform: uppercase;
@@ -235,12 +222,12 @@ body {
   border-radius: 50%;
   font-family: 'Newsreader', serif;
   font-style: italic;
-  font-size: 11px;
+  font-size: var(--fs-small);
   letter-spacing: 0;
 }
 .v2-about .text {
   font-family: 'Newsreader', serif;
-  font-size: 13px;
+  font-size: var(--fs-small);
   line-height: 1.45;
   color: var(--ds-ink);
 }
@@ -253,7 +240,7 @@ body {
 }
 .v2-formula-card .label {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 9px;
+  font-size: var(--fs-micro);
   letter-spacing: 0.2em;
   color: var(--ds-muted);
   text-transform: uppercase;
@@ -262,7 +249,7 @@ body {
 .v2-formula-card .formula {
   font-family: 'Newsreader', serif;
   font-style: italic;
-  font-size: 16px;
+  font-size: var(--fs-body);
   line-height: 1.35;
 }
 .v2-formula-card .formula mark {
@@ -276,7 +263,7 @@ body {
 .v2-formula-card .formula-hint {
   margin-top: 6px;
   font-family: 'Inter', sans-serif;
-  font-size: 11px;
+  font-size: var(--fs-small);
   color: var(--ds-muted);
   font-style: italic;
 }
@@ -285,7 +272,7 @@ body {
 .v2-variant-row { display: flex; gap: 8px; align-items: stretch; }
 .v2-variant-btn {
   flex: 1;
-  padding: 8px 10px;
+  padding: 6px 10px;
   background: var(--ds-paper);
   border: 1px solid var(--ds-rule);
   cursor: pointer;
@@ -299,7 +286,7 @@ body {
 .v2-variant-btn.active { background: var(--ds-ink); border-color: var(--ds-ink); }
 .v2-variant-btn .num {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: var(--fs-micro);
   letter-spacing: 0.18em;
   color: var(--ds-muted);
 }
@@ -307,7 +294,7 @@ body {
 .v2-variant-btn .vlbl {
   font-family: 'Newsreader', serif;
   font-style: italic;
-  font-size: 13px;
+  font-size: var(--fs-small);
   color: var(--ds-ink);
   line-height: 1.2;
   text-align: left;
@@ -318,7 +305,7 @@ body {
 .v2-knob {
   background: var(--ds-paper);
   border: 1px solid var(--ds-rule);
-  padding: 10px 14px;
+  padding: 8px 14px;
   cursor: pointer;
   transition: 120ms;
 }
@@ -335,15 +322,15 @@ body {
 .v2-knob-name {
   font-family: 'Newsreader', serif;
   font-style: italic;
-  font-size: 16px;
+  font-size: var(--fs-body);
 }
 .v2-knob-val {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 14px;
+  font-size: var(--fs-body);
   font-weight: 600;
 }
 .v2-knob-desc {
-  font-size: 11px;
+  font-size: var(--fs-small);
   color: var(--ds-muted);
   margin-bottom: 4px;
 }
@@ -353,7 +340,7 @@ body {
   cursor: pointer;
 }
 .v2-knob-effect {
-  font-size: 11px;
+  font-size: var(--fs-small);
   color: var(--ds-ink-soft);
   line-height: 1.4;
   padding-top: 6px;
@@ -370,9 +357,9 @@ body {
   gap: 8px;
 }
 .v2-action button {
-  padding: 9px 12px;
+  padding: 7px 12px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
+  font-size: var(--fs-small);
   letter-spacing: 0.1em;
   cursor: pointer;
   border: none;
@@ -389,7 +376,7 @@ body {
 /* N-slider */
 .v2-anim-row {
   background: var(--ds-paper);
-  padding: 8px 12px;
+  padding: 6px 12px;
   border: 1px solid var(--ds-rule);
   display: flex;
   align-items: center;
@@ -398,7 +385,7 @@ body {
 .v2-anim-row .lbl {
   font-family: 'Newsreader', serif;
   font-style: italic;
-  font-size: 14px;
+  font-size: var(--fs-body);
   min-width: 24px;
 }
 .v2-anim-row input[type=range] {
@@ -408,7 +395,7 @@ body {
 }
 .v2-anim-row .counter {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 12px;
+  font-size: var(--fs-small);
   color: var(--ds-ink);
   min-width: 50px;
   text-align: right;
@@ -416,7 +403,7 @@ body {
 }
 .v2-anim-hint {
   font-family: 'Inter', sans-serif;
-  font-size: 10.5px;
+  font-size: var(--fs-small);
   color: var(--ds-muted);
   line-height: 1.45;
   margin-top: -4px;
@@ -447,7 +434,7 @@ body {
 }
 .v2-stage-eyebrow {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: var(--fs-micro);
   letter-spacing: 0.2em;
   color: var(--ds-accent);
   text-transform: uppercase;
@@ -455,7 +442,7 @@ body {
 }
 .v2-stage-title {
   font-family: 'Newsreader', serif;
-  font-size: 40px;
+  font-size: var(--fs-hero);
   font-weight: 400;
   letter-spacing: -0.02em;
   line-height: 1;
@@ -469,7 +456,7 @@ body {
 .v2-stage-tagline {
   font-family: 'Newsreader', serif;
   font-style: italic;
-  font-size: 14px;
+  font-size: var(--fs-body);
   color: var(--ds-ink-soft);
   margin-top: 4px;
   max-width: 520px;
@@ -483,11 +470,11 @@ body {
 }
 .v2-stage-meta .metric .v {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 20px;
+  font-size: var(--fs-heading);
   font-weight: 600;
 }
 .v2-stage-meta .metric .l {
-  font-size: 10px;
+  font-size: var(--fs-micro);
   color: var(--ds-muted);
   letter-spacing: 0.15em;
   text-transform: uppercase;
@@ -512,7 +499,7 @@ body {
 .v2-chart-card .corner {
   position: absolute;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 9px;
+  font-size: var(--fs-micro);
   letter-spacing: 0.18em;
   color: var(--ds-muted);
 }
@@ -533,7 +520,7 @@ body {
   gap: 8px;
   align-items: center;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
+  font-size: var(--fs-micro);
 }
 .v2-legend-item .dot { width: 12px; height: 12px; }
 
@@ -553,7 +540,7 @@ body {
 }
 .v2-examples-h .t {
   font-family: 'Newsreader', serif;
-  font-size: 15px;
+  font-size: var(--fs-body);
   font-weight: 600;
 }
 .v2-examples-h .t em {
@@ -563,7 +550,7 @@ body {
 }
 .v2-examples-h .lbl {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 9px;
+  font-size: var(--fs-micro);
   letter-spacing: 0.2em;
   color: var(--ds-muted);
   text-transform: uppercase;
@@ -582,7 +569,7 @@ body {
 .v2-example:last-child { border-bottom: none; }
 .v2-example .num {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
+  font-size: var(--fs-micro);
   color: var(--ds-accent);
   font-weight: 600;
   min-width: 22px;
@@ -590,7 +577,7 @@ body {
 }
 .v2-example .text {
   font-family: 'Newsreader', serif;
-  font-size: 13px;
+  font-size: var(--fs-small);
   line-height: 1.35;
   color: var(--ds-ink);
 }
@@ -607,7 +594,7 @@ body {
 }
 .v2-stats-h .t {
   font-family: 'Newsreader', serif;
-  font-size: 15px;
+  font-size: var(--fs-body);
   font-weight: 600;
 }
 .v2-stats-h .t em {
@@ -617,7 +604,7 @@ body {
 }
 .v2-stats-h .lbl {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 9px;
+  font-size: var(--fs-micro);
   letter-spacing: 0.2em;
   color: var(--ds-muted);
   text-transform: uppercase;
@@ -644,13 +631,13 @@ body {
 .v2-mini-card .head .lbl {
   font-family: 'Newsreader', serif;
   font-style: italic;
-  font-size: 13px;
+  font-size: var(--fs-small);
 }
 .v2-mini-card .head .swatch { width: 12px; height: 12px; }
 .v2-mini-card table {
   width: 100%;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: var(--fs-micro);
   border-collapse: collapse;
 }
 .v2-mini-card td { padding: 1px 0; vertical-align: baseline; }
@@ -658,7 +645,7 @@ body {
   color: var(--ds-muted);
   font-family: 'Newsreader', serif;
   font-style: italic;
-  font-size: 11px;
+  font-size: var(--fs-small);
 }
 .v2-mini-card td.k .sym {
   color: var(--ds-ink);
@@ -666,7 +653,7 @@ body {
   font-style: normal;
   font-weight: 600;
   margin-right: 4px;
-  font-size: 10px;
+  font-size: var(--fs-micro);
   display: inline-block;
   min-width: 24px;
 }
@@ -677,7 +664,7 @@ body {
 }
 .v2-mini-card .group {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 8px;
+  font-size: var(--fs-micro);
   letter-spacing: 0.18em;
   color: var(--ds-muted);
   text-transform: uppercase;
@@ -693,7 +680,7 @@ body {
   text-align: center;
   font-family: 'Newsreader', serif;
   font-style: italic;
-  font-size: 16px;
+  font-size: var(--fs-body);
   color: var(--ds-muted);
 }
 .v2-state.error { color: var(--ds-accent); }

@@ -87,11 +87,6 @@ export function Sidebar({
 
   return (
     <div className="v2-panel">
-      <div className="v2-panel-h">
-        <div className="title">Статистическая лаборатория</div>
-        <div className="badge">CONSOLE / 02</div>
-      </div>
-
       <div className="v2-pills">
         {distributions.map((d) => (
           <button
