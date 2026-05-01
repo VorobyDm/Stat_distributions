@@ -11,6 +11,8 @@ services:
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
     envVars:
+      - key: PYTHON_VERSION
+        value: "3.13.1"
       - key: ALLOWED_ORIGINS
         # Set this to your real domain in the Render dashboard after first deploy.
         value: https://ungservice.com,https://www.ungservice.com
