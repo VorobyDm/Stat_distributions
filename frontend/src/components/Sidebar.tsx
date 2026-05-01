@@ -17,8 +17,22 @@ function paramSymbol(name: string): string {
   return PARAM_SYMBOL[name] ?? name;
 }
 
-function shortPillName(name: string): string {
-  return name.split(" ")[0].slice(0, 6);
+const SHORT_NAMES: Record<string, string> = {
+  binomial: "Биноми.",
+  poisson: "Пуассон",
+  exponential: "Экспон.",
+  weibull: "Вейбулла",
+  gamma: "Гамма",
+  beta: "Бета",
+  hypergeometric: "Гиперг.",
+  normal: "Нормал.",
+  t: "Стьюдент",
+  chi2: "Хи-кв.",
+  f: "Фишера",
+};
+
+function pillName(d: { id: string; name: string }): string {
+  return SHORT_NAMES[d.id] ?? d.name;
 }
 
 function escapeRegex(s: string): string {
@@ -85,8 +99,11 @@ export function Sidebar({
     return Number.isInteger(n) ? String(n) : n.toFixed(2).replace(/\.?0+$/, "");
   };
 
+  const density =
+    dist.params.length >= 3 ? "dense" : dist.params.length === 2 ? "medium" : "loose";
+
   return (
-    <div className="v2-panel">
+    <div className="v2-panel" data-density={density}>
       <div className="v2-pills">
         {distributions.map((d) => (
           <button
@@ -95,7 +112,7 @@ export function Sidebar({
             onClick={() => onSelectDistribution(d.id)}
             type="button"
           >
-            {d.num} {shortPillName(d.name)}
+            {pillName(d)}
           </button>
         ))}
       </div>
@@ -107,7 +124,7 @@ export function Sidebar({
       </div>
 
       <div className="v2-formula-card">
-        <div className="label">формула плотности</div>
+        <div className="label">формула плотности вероятности (PDF)</div>
         <div
           className="formula"
           dangerouslySetInnerHTML={{ __html: formulaHTML }}
@@ -171,9 +188,9 @@ export function Sidebar({
         <div className="lbl">N</div>
         <input
           type="range"
-          min={50}
+          min={10}
           max={2000}
-          step={50}
+          step={10}
           value={numSamples}
           onChange={(e) => onNumSamplesChange(Number(e.target.value))}
         />

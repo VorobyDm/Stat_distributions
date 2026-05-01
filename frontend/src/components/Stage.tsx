@@ -76,10 +76,9 @@ export function Stage({ dist, numSamples, results, palette, loading }: Props) {
       </div>
 
       <div className="v2-chart-card">
-        <span className="corner tl">FIG · {dist.num}</span>
+        <span className="corner tl">f(x)</span>
         <span className="corner tr">PDF / HISTOGRAM</span>
-        <span className="corner bl">x — значение</span>
-        <span className="corner br">f(x)</span>
+        <span className="corner bc">x — значение</span>
         <div className="v2-chart-area">
           {variants.length > 0 ? (
             <DistChart

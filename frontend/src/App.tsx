@@ -56,7 +56,7 @@ export default function App() {
   const [variantParams, setVariantParams] = useState<Record<string, number>[]>(
     [],
   );
-  const [numSamples, setNumSamples] = useState(400);
+  const [numSamples, setNumSamples] = useState(500);
 
   const [results, setResults] = useState<ComputeResponse | null>(null);
   const [computeLoading, setComputeLoading] = useState(false);
