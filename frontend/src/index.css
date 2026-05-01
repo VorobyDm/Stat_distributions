@@ -36,8 +36,10 @@
 html, body {
   margin: 0;
   padding: 0;
+  height: 100%;
   background: var(--ds-paper);
   color: var(--ds-ink);
+  overflow: hidden;
 }
 
 body {
@@ -45,7 +47,9 @@ body {
 }
 
 #root {
-  min-height: 100vh;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 /* ---- Topbar ---- */
@@ -53,12 +57,10 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 28px;
+  padding: 10px 24px;
   border-bottom: 1px solid var(--ds-rule);
   background: var(--ds-paper);
-  position: sticky;
-  top: 0;
-  z-index: 5;
+  flex-shrink: 0;
 }
 .v2-topbar .brand { display: flex; gap: 14px; align-items: baseline; }
 .v2-topbar .logo {
@@ -111,23 +113,27 @@ body {
 /* ---- Root layout ---- */
 .v2-root {
   display: grid;
-  grid-template-columns: 440px 1fr;
+  grid-template-columns: 420px 1fr;
   background: var(--ds-paper);
   font-family: 'Inter', sans-serif;
   color: var(--ds-ink);
-  min-height: calc(100vh - 53px);
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 /* ---- Sidebar panel ---- */
 .v2-panel {
   background: var(--ds-paper-alt);
   border-right: 2px solid var(--ds-ink);
-  padding: 24px;
+  padding: 18px 20px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
   position: relative;
   overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
 }
 .v2-panel::before {
   content: '';
@@ -201,7 +207,7 @@ body {
 /* About card */
 .v2-about {
   background: var(--ds-paper);
-  padding: 16px 18px;
+  padding: 12px 14px;
   border-left: 3px solid var(--ds-accent);
   border-top: 1px solid var(--ds-rule);
   border-right: 1px solid var(--ds-rule);
@@ -234,15 +240,15 @@ body {
 }
 .v2-about .text {
   font-family: 'Newsreader', serif;
-  font-size: 14px;
-  line-height: 1.55;
+  font-size: 13px;
+  line-height: 1.45;
   color: var(--ds-ink);
 }
 
 /* Formula card */
 .v2-formula-card {
   background: var(--ds-paper);
-  padding: 16px 18px;
+  padding: 12px 14px;
   border: 1px solid var(--ds-ink);
 }
 .v2-formula-card .label {
@@ -256,8 +262,8 @@ body {
 .v2-formula-card .formula {
   font-family: 'Newsreader', serif;
   font-style: italic;
-  font-size: 18px;
-  line-height: 1.4;
+  font-size: 16px;
+  line-height: 1.35;
 }
 .v2-formula-card .formula mark {
   background: var(--ds-accent-soft);
@@ -268,7 +274,7 @@ body {
   box-shadow: 0 0 0 1px var(--ds-accent);
 }
 .v2-formula-card .formula-hint {
-  margin-top: 10px;
+  margin-top: 6px;
   font-family: 'Inter', sans-serif;
   font-size: 11px;
   color: var(--ds-muted);
@@ -279,13 +285,13 @@ body {
 .v2-variant-row { display: flex; gap: 8px; align-items: stretch; }
 .v2-variant-btn {
   flex: 1;
-  padding: 12px 10px;
+  padding: 8px 10px;
   background: var(--ds-paper);
   border: 1px solid var(--ds-rule);
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
   align-items: flex-start;
   transition: 120ms;
 }
@@ -312,7 +318,7 @@ body {
 .v2-knob {
   background: var(--ds-paper);
   border: 1px solid var(--ds-rule);
-  padding: 14px 16px;
+  padding: 10px 14px;
   cursor: pointer;
   transition: 120ms;
 }
@@ -329,17 +335,17 @@ body {
 .v2-knob-name {
   font-family: 'Newsreader', serif;
   font-style: italic;
-  font-size: 18px;
+  font-size: 16px;
 }
 .v2-knob-val {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
 }
 .v2-knob-desc {
   font-size: 11px;
   color: var(--ds-muted);
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 .v2-knob input[type=range] {
   width: 100%;
@@ -347,11 +353,11 @@ body {
   cursor: pointer;
 }
 .v2-knob-effect {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--ds-ink-soft);
-  line-height: 1.5;
-  padding-top: 8px;
-  margin-top: 8px;
+  line-height: 1.4;
+  padding-top: 6px;
+  margin-top: 6px;
   border-top: 1px dotted var(--ds-rule);
   font-family: 'Newsreader', serif;
   font-style: italic;
@@ -364,7 +370,7 @@ body {
   gap: 8px;
 }
 .v2-action button {
-  padding: 12px;
+  padding: 9px 12px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 11px;
   letter-spacing: 0.1em;
@@ -383,7 +389,7 @@ body {
 /* N-slider */
 .v2-anim-row {
   background: var(--ds-paper);
-  padding: 12px 14px;
+  padding: 8px 12px;
   border: 1px solid var(--ds-rule);
   display: flex;
   align-items: center;
@@ -410,20 +416,29 @@ body {
 }
 .v2-anim-hint {
   font-family: 'Inter', sans-serif;
-  font-size: 11px;
+  font-size: 10.5px;
   color: var(--ds-muted);
-  line-height: 1.5;
-  margin-top: -8px;
+  line-height: 1.45;
+  margin-top: -4px;
 }
 
 /* ---- Stage ---- */
 .v2-stage {
-  padding: 32px 40px 40px;
+  padding: 16px 24px 20px;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 10px;
   overflow-y: auto;
+  min-height: 0;
 }
+.v2-stage-bottom {
+  display: grid;
+  grid-template-columns: minmax(280px, 1fr) 2fr;
+  gap: 12px;
+  align-items: stretch;
+  flex-shrink: 0;
+}
+.v2-stage-bottom > * { min-height: 0; }
 .v2-stage-h {
   display: flex;
   justify-content: space-between;
@@ -436,14 +451,14 @@ body {
   letter-spacing: 0.2em;
   color: var(--ds-accent);
   text-transform: uppercase;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 .v2-stage-title {
   font-family: 'Newsreader', serif;
-  font-size: 56px;
+  font-size: 40px;
   font-weight: 400;
   letter-spacing: -0.02em;
-  line-height: 0.95;
+  line-height: 1;
   margin: 0;
 }
 .v2-stage-title em {
@@ -454,21 +469,21 @@ body {
 .v2-stage-tagline {
   font-family: 'Newsreader', serif;
   font-style: italic;
-  font-size: 17px;
+  font-size: 14px;
   color: var(--ds-ink-soft);
-  margin-top: 8px;
+  margin-top: 4px;
   max-width: 520px;
-  line-height: 1.4;
+  line-height: 1.35;
 }
 .v2-stage-meta {
   display: flex;
-  gap: 28px;
-  padding-bottom: 6px;
+  gap: 22px;
+  padding-bottom: 0;
   flex-shrink: 0;
 }
 .v2-stage-meta .metric .v {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 600;
 }
 .v2-stage-meta .metric .l {
@@ -481,8 +496,17 @@ body {
 /* Chart card */
 .v2-chart-card {
   background: var(--ds-paper-alt);
-  padding: 28px 14px 14px;
+  padding: 22px 12px 10px;
   border: 1px solid var(--ds-rule);
+  position: relative;
+  flex: 1;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+}
+.v2-chart-area {
+  flex: 1;
+  min-height: 0;
   position: relative;
 }
 .v2-chart-card .corner {
@@ -500,7 +524,7 @@ body {
 .v2-legend {
   display: flex;
   gap: 18px;
-  margin-top: 14px;
+  margin-top: 8px;
   flex-wrap: wrap;
   padding: 0 4px;
 }
@@ -522,13 +546,14 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  padding: 14px 20px;
+  padding: 8px 14px;
   border-bottom: 1px solid var(--ds-rule);
   background: var(--ds-paper-alt);
+  gap: 8px;
 }
 .v2-examples-h .t {
   font-family: 'Newsreader', serif;
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 600;
 }
 .v2-examples-h .t em {
@@ -545,18 +570,16 @@ body {
 }
 .v2-examples-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1fr;
 }
 .v2-example {
-  padding: 16px 20px;
-  border-right: 1px solid var(--ds-rule);
+  padding: 8px 14px;
   border-bottom: 1px solid var(--ds-rule);
   display: flex;
-  gap: 12px;
+  gap: 10px;
   align-items: flex-start;
 }
-.v2-example:nth-child(2n) { border-right: none; }
-.v2-example:nth-last-child(-n+2) { border-bottom: none; }
+.v2-example:last-child { border-bottom: none; }
 .v2-example .num {
   font-family: 'JetBrains Mono', monospace;
   font-size: 11px;
@@ -567,23 +590,24 @@ body {
 }
 .v2-example .text {
   font-family: 'Newsreader', serif;
-  font-size: 14px;
-  line-height: 1.45;
+  font-size: 13px;
+  line-height: 1.35;
   color: var(--ds-ink);
 }
 
 /* Stats block */
-.v2-stats-block { display: flex; flex-direction: column; gap: 12px; }
+.v2-stats-block { display: flex; flex-direction: column; gap: 8px; }
 .v2-stats-h {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  padding-bottom: 8px;
+  padding-bottom: 4px;
   border-bottom: 1px solid var(--ds-rule);
+  gap: 8px;
 }
 .v2-stats-h .t {
   font-family: 'Newsreader', serif;
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 600;
 }
 .v2-stats-h .t em {
@@ -602,49 +626,49 @@ body {
 .v2-cards-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+  gap: 8px;
 }
 .v2-mini-card {
   background: var(--ds-paper);
   border: 1px solid var(--ds-rule);
-  padding: 14px 16px;
+  padding: 8px 12px;
 }
 .v2-mini-card .head {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
-  padding-bottom: 8px;
+  margin-bottom: 4px;
+  padding-bottom: 4px;
   border-bottom: 1px solid var(--ds-rule);
 }
 .v2-mini-card .head .lbl {
   font-family: 'Newsreader', serif;
   font-style: italic;
-  font-size: 14px;
+  font-size: 13px;
 }
-.v2-mini-card .head .swatch { width: 14px; height: 14px; }
+.v2-mini-card .head .swatch { width: 12px; height: 12px; }
 .v2-mini-card table {
   width: 100%;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10.5px;
+  font-size: 10px;
   border-collapse: collapse;
 }
-.v2-mini-card td { padding: 3px 0; vertical-align: baseline; }
+.v2-mini-card td { padding: 1px 0; vertical-align: baseline; }
 .v2-mini-card td.k {
   color: var(--ds-muted);
   font-family: 'Newsreader', serif;
   font-style: italic;
-  font-size: 12px;
+  font-size: 11px;
 }
 .v2-mini-card td.k .sym {
   color: var(--ds-ink);
   font-family: 'JetBrains Mono', monospace;
   font-style: normal;
   font-weight: 600;
-  margin-right: 6px;
-  font-size: 11px;
+  margin-right: 4px;
+  font-size: 10px;
   display: inline-block;
-  min-width: 28px;
+  min-width: 24px;
 }
 .v2-mini-card td.v {
   text-align: right;
@@ -653,15 +677,15 @@ body {
 }
 .v2-mini-card .group {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 8.5px;
+  font-size: 8px;
   letter-spacing: 0.18em;
   color: var(--ds-muted);
   text-transform: uppercase;
-  padding-top: 8px;
-  padding-bottom: 2px;
+  padding-top: 4px;
+  padding-bottom: 1px;
   border-top: 1px dotted var(--ds-rule);
 }
-.v2-mini-card .group:first-of-type { border-top: none; padding-top: 2px; }
+.v2-mini-card .group:first-of-type { border-top: none; padding-top: 1px; }
 
 /* Loader / error states */
 .v2-state {

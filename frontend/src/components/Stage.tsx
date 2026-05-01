@@ -80,17 +80,24 @@ export function Stage({ dist, numSamples, results, palette, loading }: Props) {
         <span className="corner tr">PDF / HISTOGRAM</span>
         <span className="corner bl">x — значение</span>
         <span className="corner br">f(x)</span>
-        <div style={{ padding: "12px 0 4px" }}>
+        <div className="v2-chart-area">
           {variants.length > 0 ? (
             <DistChart
               variants={variants}
               type={dist.type}
               palette={palette}
               area={dist.type === "continuous"}
-              height={320}
             />
           ) : (
-            <div className="v2-state">
+            <div
+              className="v2-state"
+              style={{
+                height: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
               {loading
                 ? "вычисляем…"
                 : "нажмите «Сгенерировать», чтобы увидеть график"}
@@ -112,68 +119,74 @@ export function Stage({ dist, numSamples, results, palette, loading }: Props) {
         )}
       </div>
 
-      <div className="v2-examples">
-        <div className="v2-examples-h">
-          <div className="t">
-            Где встречается <em>в реальной жизни</em>
-          </div>
-          <div className="lbl">примеры применения</div>
-        </div>
-        <div className="v2-examples-grid">
-          {dist.examples.map((ex, i) => (
-            <div key={i} className="v2-example">
-              <div className="num">{String(i + 1).padStart(2, "0")}</div>
-              <div className="text">{ex}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {variants.length > 0 && (
-        <div className="v2-stats-block">
-          <div className="v2-stats-h">
+      <div className="v2-stage-bottom">
+        <div className="v2-examples">
+          <div className="v2-examples-h">
             <div className="t">
-              <em>Статистики</em> по вариантам
+              Где встречается <em>в реальной жизни</em>
             </div>
-            <div className="lbl">μ · σ · медиана</div>
+            <div className="lbl">примеры</div>
           </div>
-          <div className="v2-cards-row">
-            {variants.map((v, i) => (
-              <div key={i} className="v2-mini-card">
-                <div className="head">
-                  <span className="lbl">{v.label}</span>
-                  <span
-                    className="swatch"
-                    style={{ background: palette[i % palette.length] }}
-                  />
-                </div>
-                <table>
-                  <tbody>
-                    {STAT_ROWS.map((g) => (
-                      <Fragment key={g.group}>
-                        <tr>
-                          <td colSpan={2} className="group">
-                            {g.group}
-                          </td>
-                        </tr>
-                        {g.rows.map((row) => (
-                          <tr key={`${g.group}-${row.key}`}>
-                            <td className="k">
-                              <span className="sym">{row.sym}</span>
-                              {row.label}
-                            </td>
-                            <td className="v">{v.stats[row.key]}</td>
-                          </tr>
-                        ))}
-                      </Fragment>
-                    ))}
-                  </tbody>
-                </table>
+          <div className="v2-examples-grid">
+            {dist.examples.map((ex, i) => (
+              <div key={i} className="v2-example">
+                <div className="num">{String(i + 1).padStart(2, "0")}</div>
+                <div className="text">{ex}</div>
               </div>
             ))}
           </div>
         </div>
-      )}
+
+        {variants.length > 0 ? (
+          <div className="v2-stats-block">
+            <div className="v2-stats-h">
+              <div className="t">
+                <em>Статистики</em> по вариантам
+              </div>
+              <div className="lbl">μ · σ · медиана</div>
+            </div>
+            <div className="v2-cards-row">
+              {variants.map((v, i) => (
+                <div key={i} className="v2-mini-card">
+                  <div className="head">
+                    <span className="lbl">{v.label}</span>
+                    <span
+                      className="swatch"
+                      style={{ background: palette[i % palette.length] }}
+                    />
+                  </div>
+                  <table>
+                    <tbody>
+                      {STAT_ROWS.map((g) => (
+                        <Fragment key={g.group}>
+                          <tr>
+                            <td colSpan={2} className="group">
+                              {g.group}
+                            </td>
+                          </tr>
+                          {g.rows.map((row) => (
+                            <tr key={`${g.group}-${row.key}`}>
+                              <td className="k">
+                                <span className="sym">{row.sym}</span>
+                                {row.label}
+                              </td>
+                              <td className="v">{v.stats[row.key]}</td>
+                            </tr>
+                          ))}
+                        </Fragment>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="v2-state" style={{ padding: 16 }}>
+            статистики появятся после генерации
+          </div>
+        )}
+      </div>
     </div>
   );
 }
